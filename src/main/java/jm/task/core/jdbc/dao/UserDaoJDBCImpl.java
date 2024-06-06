@@ -58,7 +58,7 @@ public class UserDaoJDBCImpl implements UserDao {
             statement.setByte(3, age);
             statement.executeUpdate();
 
-            System.out.println("table updated");
+            System.out.printf("User с именем - %s добавлен в базу данных\n", name);
         } catch (SQLException e) {
 //            System.out.println(e.getMessage());
             e.printStackTrace();
@@ -73,7 +73,7 @@ public class UserDaoJDBCImpl implements UserDao {
             statement.setLong(1, id);
             statement.executeUpdate();
 
-            System.out.println("table updated");
+            System.out.println("deleted by id");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -111,7 +111,7 @@ public class UserDaoJDBCImpl implements UserDao {
             Statement statement = connection.createStatement();
             statement.executeUpdate(expression);
 
-            System.out.println("table deleted");
+            System.out.println("table cleared");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
