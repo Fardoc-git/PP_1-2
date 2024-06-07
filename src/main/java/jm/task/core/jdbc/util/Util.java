@@ -3,17 +3,14 @@ package jm.task.core.jdbc.util;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Scanner;
 
 public class Util {
     // реализуйте настройку соеденения с БД
+    private static final String hostName = "jdbc:mysql://localhost:3306";
+    private static final String userName = "root";
+    private static final String password = "root";
 
     public static Connection getConnection() throws SQLException {
-        String hostName = "jdbc:mysql://localhost:3306";
-        String userName = "root";
-//        Scanner scanner = new Scanner(System.in);
-//        String password = scanner.nextLine();
-        String password = "root";
         return getConnection(hostName, userName, password);
     }
 
