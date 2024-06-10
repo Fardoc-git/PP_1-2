@@ -8,17 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
-    private Connection connection;
-    {
-        try {
-            connection = Util.getConnection();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
+    private final Connection connection = Util.getConnection();
 
     public UserDaoJDBCImpl() {
-
     }
 
     public void createUsersTable() {
@@ -34,11 +26,8 @@ public class UserDaoJDBCImpl implements UserDao {
                     DEFAULT CHARACTER SET = utf8;
                 """;
 
-        try {
-            Statement statement = connection.createStatement();
+        try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(expression);
-
-//            System.out.println("table created");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -47,11 +36,8 @@ public class UserDaoJDBCImpl implements UserDao {
     public void dropUsersTable() {
         String expression = "DROP TABLE IF EXISTS dbtest.users;";
 
-        try {
-            Statement statement = connection.createStatement();
+        try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(expression);
-
-//            System.out.println("table deleted");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -60,37 +46,33 @@ public class UserDaoJDBCImpl implements UserDao {
     public void saveUser(String name, String lastName, byte age) {
         String expression = "INSERT INTO dbtest.users (name, lastName, age) VALUES (?, ?, ?);";
 
-        try {
-            PreparedStatement statement = connection.prepareStatement(expression);
+        try (PreparedStatement statement = connection.prepareStatement(expression)) {
             statement.setString(1, name);
             statement.setString(2, lastName);
             statement.setByte(3, age);
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
     public void removeUserById(long id) {
         String expression = "DELETE FROM dbtest.users WHERE id = ?;";
 
-        try {
-            PreparedStatement statement = connection.prepareStatement(expression);
+        try (PreparedStatement statement = connection.prepareStatement(expression)) {
             statement.setLong(1, id);
             statement.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-
     }
 
     public List<User> getAllUsers() {
         String expression = "SELECT * FROM dbtest.users;";
-        ResultSet rs = null;
+        ResultSet rs;
         List<User> userList = new ArrayList<>();
 
-        try {
-            Statement statement = connection.createStatement();
+        try (Statement statement = connection.createStatement()) {
             rs = statement.executeQuery(expression);
             while (rs.next()) {
                 User user = new User(rs.getString("name")
@@ -102,15 +84,13 @@ public class UserDaoJDBCImpl implements UserDao {
         } catch (SQLException | NullPointerException e) {
             System.out.println(e.getMessage());
         }
-
         return userList;
     }
 
     public void cleanUsersTable() {
         String expression = "DELETE FROM dbtest.users;";
 
-        try {
-            Statement statement = connection.createStatement();
+        try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(expression);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
