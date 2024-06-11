@@ -18,7 +18,6 @@ public class UserDaoHibernateImpl implements UserDao {
 
     }
 
-
     @Override
     public void createUsersTable() {
         String expression = """
@@ -49,11 +48,11 @@ public class UserDaoHibernateImpl implements UserDao {
         String expression = "DROP TABLE IF EXISTS dbtest.users;";
         Session session = sessionFactory.openSession();
         try (session) {
-            Transaction transaction = session.beginTransaction();
+            session.beginTransaction();
             Query query = session.createSQLQuery(expression)
                     .addEntity(User.class);
             query.executeUpdate();
-            transaction.commit();
+            session.getTransaction().commit();
         } catch (HibernateException e) {
             System.out.println(e.getMessage());
         }
@@ -65,26 +64,51 @@ public class UserDaoHibernateImpl implements UserDao {
         try (session) {
             session.beginTransaction();
             User user = new User(name, lastName, age);
-            session.persist(user);
+            session.save(user);
             session.getTransaction().commit();
-
-
-
+        } catch (HibernateException e) {
+            if (session.getTransaction().isActive()) {
+                session.getTransaction().rollback();
+            }
+            System.out.println(e.getMessage());
         }
     }
 
     @Override
     public void removeUserById(long id) {
-
+        Session session = sessionFactory.openSession();
+        try (session) {
+            session.beginTransaction();
+            session.remove(session.get(User.class, id));
+            session.getTransaction().commit();
+        } catch (HibernateException e) {
+            if (session.getTransaction().isActive()) {
+                session.getTransaction().rollback();
+            }
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
     public List<User> getAllUsers() {
-        return null;
+        Session session = sessionFactory.openSession();
+        try (session) {
+            return session.createQuery("from User", User.class).list();
+        }
     }
 
     @Override
     public void cleanUsersTable() {
-
+        Session session = sessionFactory.openSession();
+        try (session) {
+            session.beginTransaction();
+            session.createQuery("delete from User").executeUpdate();
+            session.getTransaction().commit();
+        } catch (HibernateException e) {
+            if (session.getTransaction().isActive()) {
+                session.getTransaction().rollback();
+            }
+            System.out.println(e.getMessage());
+        }
     }
 }

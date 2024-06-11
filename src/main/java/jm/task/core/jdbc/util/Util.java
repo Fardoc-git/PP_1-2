@@ -15,7 +15,7 @@ public class Util {
     // реализуйте настройку соеденения с БД
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
     public static final String DIALECT = "org.hibernate.dialect.MySQL5InnoDBDialect";
-    private static final String HOST_NAME = "jdbc:mysql://localhost:3306";
+    private static final String HOST_NAME = "jdbc:mysql://localhost:3306/dbtest";
     private static final String USER_NAME = "root";
     private static final String PASSWORD = "root";
 
@@ -30,10 +30,6 @@ public class Util {
         }
         return connection;
     }
-//
-//    public static Connection getConnection(String hostName, String userName, String password) throws SQLException {
-//        return DriverManager.getConnection(hostName, userName, password);
-//    }
 
     public static SessionFactory getSessionFactory() {
         if (sessionFactory == null){
@@ -42,8 +38,8 @@ public class Util {
                 Properties properties = getProperties();
 
                 sessionFactory = configuration
-                        .addAnnotatedClass(User.class)
                         .addProperties(properties)
+                        .addAnnotatedClass(User.class)
                         .buildSessionFactory();
             } catch (HibernateException e) {
                 System.out.println(e.getMessage());
